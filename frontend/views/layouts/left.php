@@ -25,48 +25,73 @@
             </div>
         </form>
         <!-- /.search form -->
-
-        <?= dmstr\widgets\Menu::widget(
-            [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    ['label' => 'Dashboard', 'icon' => 'home', 'url' => ['/site/index']],
-                    ['label' => 'Catalogue', 'icon' => 'book', 'url' => ['/book/index']],
-                    ['label' => 'Students', 'icon' => 'users', 'url' => ['/student/index']],
-
-                    ['label' => 'Menu Yii2', 'options' => ['class' => 'header']],
-                    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
-                    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
-                    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
+        <?php if(Yii::$app->user->can('admin')){?>
+                <?= dmstr\widgets\Menu::widget(
                     [
-                        'label' => 'Some tools',
-                        'icon' => 'share',
-                        'url' => '#',
+                        'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
                         'items' => [
-                            ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
-                            ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
+                            ['label' => 'Dashboard', 'icon' => 'home', 'url' => ['/index']],
+                            ['label' => 'Catalogue', 'icon' => 'book', 'url' => ['/book/index']],
+                            ['label' => 'Students', 'icon' => 'users', 'url' => ['/student/index']],
+
+                            ['label' => 'Menu Yii2', 'options' => ['class' => 'header']],
+                            ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
+                            ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
+                            ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                             [
-                                'label' => 'Level One',
-                                'icon' => 'circle-o',
+                                'label' => 'Some tools',
+                                'icon' => 'share',
                                 'url' => '#',
                                 'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
+                                    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
+                                    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
                                     [
-                                        'label' => 'Level Two',
+                                        'label' => 'Level One',
                                         'icon' => 'circle-o',
                                         'url' => '#',
                                         'items' => [
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                                            ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
+                                            [
+                                                'label' => 'Level Two',
+                                                'icon' => 'circle-o',
+                                                'url' => '#',
+                                                'items' => [
+                                                    ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                                                    ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                                                ],
+                                            ],
                                         ],
                                     ],
                                 ],
                             ],
                         ],
-                    ],
+                    ]
+                ) ?>
+            <?php }?>
+
+<?php if(Yii::$app->user->can('librarian')){?>
+        <?= dmstr\widgets\Menu::widget(
+            [
+                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
+                'items' => [
+                    ['label' => 'Dashboard', 'icon' => 'home', 'url' => ['/index']],
+                    ['label' => 'Catalogue', 'icon' => 'book', 'url' => ['/book/index']],
+                    ['label' => 'Students', 'icon' => 'users', 'url' => ['/student/index']],
                 ],
             ]
         ) ?>
+    <?php }?>
+    <?php if(Yii::$app->user->can('student')){?>
+      <?= dmstr\widgets\Menu::widget(
+          [
+              'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
+              'items' => [
+                  ['label' => 'Dashboard', 'icon' => 'home', 'url' => ['borrowed-book/index']],
+                  ['label' => 'Catalogue', 'icon' => 'book', 'url' => ['/book/index']]
+                ],
+              ]
+            ) ?>
+      <?php }?>
 
     </section>
 

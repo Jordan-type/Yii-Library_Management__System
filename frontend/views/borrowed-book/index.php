@@ -86,7 +86,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box-header">
               <h3 class="box-title">Book Assignment</h3>
               <div class="box-tools">
+                <?php if(Yii::$app->user->can('librarian')){ ?>
                 <button type="button" class="btn btn-primary assignbook" aria-controls="example1"><span class="fa fa-plus"> Assign a Book</span></button>
+              <?php }?>
+              <?php if(Yii::$app->user->can('student')){ ?>
+                <button type="button" class="btn btn-primary" aria-controls="example1"><span class="fa fa-plus"> Request a Book</span></button>
+              <?php }?>
               </div>
             </div>
             <!-- /.box-header -->
@@ -159,12 +164,27 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $date->format('F j, Y,');
                   },
               ],
-              // 'return_date',
+              'return_date',
               [
                 'label'=>'Return Book',
-                'format' => 'html',
+                'format' => 'raw',
                 'value' => function ($dataProvider) {
-                return '<span class="btn btn-danger">Return</span>';
+                return '<span val='.$dataProvider->bbook_id.' class="btn btn-danger returnbook">Return</span>';
+                  },
+              ],
+              [
+                'label'=>'Book Status',
+                'format' => 'raw',
+                'value' => function ($dataProvider) {
+                  $bookstatus = Books::find()->where(['book_id'=>$dataProvider->book_id])->one();
+                  if($bookstatus->status == 0){
+                    $status = 'Available';
+                  }elseif ($bookstatus->status == 1) {
+                    $status = 'Issued';
+                  }elseif ($bookstatus->status == 2) {
+                    $status = 'Pending';
+                  }
+                return '<span class="btn btn-info">'.$status.'</span>';
                   },
               ],
                           ['class' => 'yii\grid\ActionColumn'],
@@ -205,5 +225,15 @@ Modal::begin([
   'size'=>'modal-lg'
   ]);
 echo "<div id='assignbookContent'></div>";
+Modal::end();
+?>
+
+<?php
+Modal::begin([
+  'header'=>'<h4>Return Book confirmation</h4>',
+  'id'=>'returnbook',
+  'size'=>'modal-md'
+  ]);
+echo "<div id='returnbookContent'></div>";
 Modal::end();
 ?>

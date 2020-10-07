@@ -13,6 +13,28 @@ $(document).ready(function() {
 
   	});
 
+    $('.requestbook').click(function(e){
+          e.preventDefault();
+
+          var id = $(this).attr("val");
+          $.get('requestbook?id='+id,function(data){
+          $('#requestbook').modal('show')
+          .find('#requestbookContent')
+          .html(data);
+        });
+
+      });
+
+    $('.returnbook').click(function(e){
+			e.preventDefault();
+			var id = $(this).attr("val");
+	       $.get('returnbook?id='+id,function(data){
+				$('#returnbook').modal('show')
+			 		.find('#returnbookContent')
+			 		.html(data);
+        });
+	});
+
     $('.addauthor').click(function(e){
           e.preventDefault();
 

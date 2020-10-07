@@ -109,6 +109,21 @@ public function bookauthors($author_id,$book_id){
         return false;
     }
 
+public function actionRequestbook()
+    {
+        $model = new \frontend\models\Books();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate() && $modal->save) {
+                // form inputs are valid, do something here
+                return;
+            }
+        }
+
+        return $this->renderAjax('requestbook', [
+            'model' => $model,
+        ]);
+    }
     /**
      * Updates an existing Books model.
      * If update is successful, the browser will be redirected to the 'view' page.
