@@ -6,6 +6,7 @@ use Yii;
 use frontend\models\Books;
 use frontend\models\BookSearch;
 use frontend\models\BookAuthors;
+use frontend\models\BorrowedBooks;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -101,7 +102,7 @@ class BookController extends Controller
 
 public function bookauthors($author_id,$book_id){
         $model = New BookAuthors();
-        $data= array('BookAuthors'=>['book_id'=>$book_id,'author_id'=>$author_id]);
+        $data = array('BookAuthors'=>['book_id'=>$book_id,'author_id'=>$author_id]);
 
         if($model->load($data) && $model->save()){
             return true;
@@ -109,21 +110,34 @@ public function bookauthors($author_id,$book_id){
         return false;
     }
 
+    /*
+
+    helps user to borrow books
+    */
+
+
 public function actionRequestbook()
     {
-        $model = new \frontend\models\Books();
+        $model = new BorrowedBooks();
 
-        if ($model->load(Yii::$app->request->post())) {
-            if ($model->validate() && $modal->save) {
-                // form inputs are valid, do something here
-                return;
-            }
+        var_dump(Yii::$app->request->post());
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+          $this->afterBookRequest($model->book_id);
+          // form inputs are valid, do something here
+          return $this->redirect(['index']);
         }
 
         return $this->renderAjax('requestbook', [
             'model' => $model,
         ]);
     }
+
+public function afterBookRequest($bookId){
+  $command = \Yii::$app->db->createCommand('UPDATE books SET status=2 WHERE book_id='.$bookId);
+  $command->execute();
+  return true;
+}
     /**
      * Updates an existing Books model.
      * If update is successful, the browser will be redirected to the 'view' page.

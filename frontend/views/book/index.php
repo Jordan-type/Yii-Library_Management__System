@@ -42,12 +42,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterModel' => $searchModel,
                 'columns' => [
                     ['class' => 'yii\grid\SerialColumn'],
-
                     'book_id',
                     'book_name',
                     'reference_number',
                     'publisher',
-                    'status',
+                    // 'status',
+                    [
+                      'label'=>'Book Status',
+                      'format' => 'raw',
+                      'value' => function ($dataProvider) {
+                        $bookstatus = Books::find()->where(['book_id'=>$dataProvider->book_id])->one();
+                        if($bookstatus->status == 0){
+                          $status = 'Available';
+                          return '<span class="btn btn-info">'.$status.'</span>';
+                        }elseif ($bookstatus->status == 1) {
+                          $status = 'Issued';
+                          return '<span class="btn btn-success">'.$status.'</span>';
+                        }elseif ($bookstatus->status == 2) {
+                          $status = 'Pending';
+                          return '<span class="btn btn-danger">'.$status.'</span>';
+                        }
+                      // return '<span class="btn btn-info">'.$status.'</span>';
+                        },
+                    ],
                     ['class' => 'yii\grid\ActionColumn'],
                 ],
             ]); ?>
@@ -74,12 +91,15 @@ $this->params['breadcrumbs'][] = $this->title;
                      $bookstatus = Books::find()->where(['book_id'=>$dataProvider->book_id])->one();
                      if($bookstatus->status == 0){
                        $status = 'Available';
+                       return '<span class="btn btn-info">'.$status.'</span>';
                      }elseif ($bookstatus->status == 1) {
                        $status = 'Issued';
+                       return '<span class="btn btn-success">'.$status.'</span>';
                      }elseif ($bookstatus->status == 2) {
                        $status = 'Pending';
+                       return '<span class="btn btn-danger">'.$status.'</span>';
                      }
-                   return '<span class="btn btn-info">'.$status.'</span>';
+                   // return '<span class="btn btn-info">'.$status.'</span>';
                      },
                  ],
                  [
@@ -101,9 +121,9 @@ $this->params['breadcrumbs'][] = $this->title;
           </div>
           <?php
           Modal::begin([
-            'header'=>'<h4>Request a Book</h4>',
+            'header'=>'<h4>Request Book</h4>',
             'id'=>'requestbook',
-            'size'=>'modal-lg'
+            'size'=>'modal-md'
             ]);
           echo "<div id='requestbookContent'></div>";
           Modal::end();

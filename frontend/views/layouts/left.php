@@ -74,7 +74,7 @@
             [
                 'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
                 'items' => [
-                    ['label' => 'Dashboard', 'icon' => 'home', 'url' => ['/index']],
+                    ['label' => 'Dashboard', 'icon' => 'home', 'url' => ['borrowed-book/index']],
                     ['label' => 'Catalogue', 'icon' => 'book', 'url' => ['/book/index']],
                     ['label' => 'Students', 'icon' => 'users', 'url' => ['/student/index']],
                 ],

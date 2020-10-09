@@ -14,7 +14,7 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 $totalBooks = Books::find()->asArray()->all();
 $totalStudents = Students::find()->asArray()->all();
-$totalBorrowedBooks = BorrowedBooks::find()->asArray()->all();
+$totalBorrowedBooks = BorrowedBooks::find()->where(['return_date'=>Null])->asArray()->all();
 $overdue = BorrowedBooks::find()->where('expected_date >'.date('yy/m/d'))->andWhere(['return_date'=>NULL])->asArray()->all();
 
 
@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <button type="button" class="btn btn-primary assignbook" aria-controls="example1"><span class="fa fa-plus"> Assign a Book</span></button>
               <?php }?>
               <?php if(Yii::$app->user->can('student')){ ?>
-                <button type="button" class="btn btn-primary" aria-controls="example1"><span class="fa fa-plus"> Request a Book</span></button>
+                <button type="button" class="btn btn-primary requestbook" aria-controls="example1"><span class="fa fa-plus"> Request a Book</span></button>
               <?php }?>
               </div>
             </div>
@@ -123,6 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
               </div>
               </div>
               <!-- Table start -->
+              <?php if(Yii::$app->user->can('librarian')){ ?>
               <div class="row table-responsive no-padding">
                 <div class="col-sm-12">
                   <?= GridView::widget([
@@ -179,10 +180,13 @@ $this->params['breadcrumbs'][] = $this->title;
                   $bookstatus = Books::find()->where(['book_id'=>$dataProvider->book_id])->one();
                   if($bookstatus->status == 0){
                     $status = 'Available';
+                    return '<span class="btn btn-info">'.$status.'</span>';
                   }elseif ($bookstatus->status == 1) {
                     $status = 'Issued';
+                    return '<span class="btn btn-success">'.$status.'</span>';
                   }elseif ($bookstatus->status == 2) {
                     $status = 'Pending';
+                    return '<span class="btn btn-danger">'.$status.'</span>';
                   }
                 return '<span class="btn btn-info">'.$status.'</span>';
                   },
@@ -191,8 +195,77 @@ $this->params['breadcrumbs'][] = $this->title;
                       ],
                   ]); ?>
             </div>
-
             </div>
+            <?php }?>
+
+            <!-- Table start -->
+            <?php if(Yii::$app->user->can('student')){ ?>
+            <div class="row table-responsive no-padding">
+              <div class="col-sm-12">
+                <?= GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'columns' => [
+                        ['class' => 'yii\grid\SerialColumn'],
+
+                        // 'bbook_id',
+                        // student_id,
+                        [
+                        'attribute' => 'student_id',
+                        'value' => function ($dataProvider) {
+                            $studentName = Students::find()->where(['student_id'=>$dataProvider->student_id])->One();
+                            return $studentName->full_name;
+                        },
+                    ],
+                        // 'book_id',
+                        [
+                        'attribute' => 'book_id',
+                        'value' => function ($dataProvider) {
+                            $bookName = Books::find()->where(['book_id'=>$dataProvider->book_id])->One();
+                            return $bookName->book_name;
+                        },
+                    ],
+                    // 'borrow_date',
+                    [
+                    'attribute' => 'borrow_date',
+                    'value' => function ($dataProvider) {
+                      $date = new DateTime($dataProvider->borrow_date);
+                      return $date->format('F j, Y,');
+                    },
+                ],
+                // 'expected_date',
+                [
+                'attribute' => 'expected_date',
+                'value' => function ($dataProvider) {
+                  $date = new DateTime($dataProvider->expected_date);
+                  return $date->format('F j, Y,');
+                },
+            ],
+            'return_date',
+            [
+              'label'=>'Book Status',
+              'format' => 'raw',
+              'value' => function ($dataProvider) {
+                $bookstatus = Books::find()->where(['book_id'=>$dataProvider->book_id])->one();
+                if($bookstatus->status == 0){
+                  $status = 'Available';
+                  return '<span class="btn btn-info">'.$status.'</span>';
+                }elseif ($bookstatus->status == 1) {
+                  $status = 'Issued';
+                  return '<span class="btn btn-success">'.$status.'</span>';
+                }elseif ($bookstatus->status == 2) {
+                  $status = 'Pending';
+                  return '<span class="btn btn-danger">'.$status.'</span>';
+                }
+              // return '<span class="btn btn-info">'.$status.'</span>';
+                },
+            ],
+                        ['class' => 'yii\grid\ActionColumn'],
+                    ],
+                ]); ?>
+          </div>
+          </div>
+          <?php }?>
             <div class="row">
                 <div class="col-sm-5">
                 <div class="dataTables_info" id="example1_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div>

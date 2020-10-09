@@ -47,5 +47,17 @@ $(document).ready(function() {
         });
 
       });
+      $('.borrowbook').click(function(e){
+            e.preventDefault();
+
+            $.get('borrowbook',function(data){
+            $('#borrowbook').modal('show')
+            .find('#borrowbookContent')
+            // .load($(this).attr('value'));
+            .html(data);
+
+          });
+
+        });
 
 });
