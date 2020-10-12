@@ -12,6 +12,7 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\BorrowedBookSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+
 $totalBooks = Books::find()->asArray()->all();
 $totalStudents = Students::find()->asArray()->all();
 $totalBorrowedBooks = BorrowedBooks::find()->where(['return_date'=>Null])->asArray()->all();
@@ -42,7 +43,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <div class="info-box-content">
               <span class="info-box-text">Borrwed Books</span>
-              <span class="info-box-number"><?= count($totalBorrowedBooks)?></span>
+
+                <?php if(Yii::$app->user->can('librarian')){ ?>
+                  <span class="info-box-number"> <?= count($totalBorrowedBooks)?></span>
+                <?php }?>
+
+                <?php if(Yii::$app->user->can('student')){
+                  $student_id = Students::find()->where(['user_id'=>Yii::$app->user->id])->One();
+                  $query = BorrowedBooks::find()->where(['return_date'=>NULL])->andWhere(['student_id'=>$student_id->student_id])->asArray()->all(); ?>
+
+                  <span class="info-box-number"> <?= count($query)?></span>
+                <?php }?>
             </div>
             <!-- /.info-box-content -->
           </div>
@@ -90,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <button type="button" class="btn btn-primary assignbook" aria-controls="example1"><span class="fa fa-plus"> Assign a Book</span></button>
               <?php }?>
               <?php if(Yii::$app->user->can('student')){ ?>
-                <button type="button" class="btn btn-primary requestbook" aria-controls="example1"><span class="fa fa-plus"> Request a Book</span></button>
+                <button type="button"  class="btn btn-primary requestbook" aria-controls="example1"><span class="fa fa-plus"> Request a Book</span></button>
               <?php }?>
               </div>
             </div>
@@ -186,12 +197,25 @@ $this->params['breadcrumbs'][] = $this->title;
                     return '<span class="btn btn-success">'.$status.'</span>';
                   }elseif ($bookstatus->status == 2) {
                     $status = 'Pending';
-                    return '<span class="btn btn-danger">'.$status.'</span>';
+                    return '<span class="btn btn-warning">'.$status.'</span>';
                   }
-                return '<span class="btn btn-info">'.$status.'</span>';
+                // return '<span class="btn btn-info">'.$status.'</span>';
                   },
               ],
-                          ['class' => 'yii\grid\ActionColumn'],
+              [
+                  'label'=>'Approve Books',
+                  'format' => 'raw',
+                  'value' => function ($dataProvider) {
+                  $bookStatus = Books::find()->where(['book_id'=>$dataProvider->book_id])->One();
+                  if(\Yii::$app->user->can('librarian') && $bookStatus->status == 2){
+                    return Html::a('Approve', ['approve','id'=>$dataProvider->book_id,'student_id'=>$dataProvider->student_id], ['class' => 'btn btn-success']);
+                          }
+                          return '';
+                          },
+
+                       ],
+
+              ['class' => 'yii\grid\ActionColumn'],
                       ],
                   ]); ?>
             </div>

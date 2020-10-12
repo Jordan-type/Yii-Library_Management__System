@@ -51,6 +51,9 @@ class BorrowedBookSearch extends BorrowedBooks
         if (Yii::$app->user->can('librarian')){
         $query = BorrowedBooks::find()->where(['return_date'=>NULL]);
       }
+        if (Yii::$app->user->can('admin')){
+        $query = BorrowedBooks::find()->where(['return_date'=>NULL]);
+      }
         // $user_id=Yii::$app->user->identity->id;
         // $query = Event::find()->where(['author_id'=>$user_id]);
 

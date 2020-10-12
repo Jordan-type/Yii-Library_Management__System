@@ -60,7 +60,8 @@ $this->params['breadcrumbs'][] = $this->title;
                           return '<span class="btn btn-success">'.$status.'</span>';
                         }elseif ($bookstatus->status == 2) {
                           $status = 'Pending';
-                          return '<span class="btn btn-danger">'.$status.'</span>';
+                          // return Html::a('Approve', ['approve','id'=>$dataProvider->book_id,'studentId'=>$dataProvider->student_id], ['class' => 'btn btn-success']);
+                          return '<span val="'.$dataProvider->book_id.'" class="btn btn-danger approvebook">'.$status.'</span>';
                         }
                       // return '<span class="btn btn-info">'.$status.'</span>';
                         },
@@ -126,5 +127,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'size'=>'modal-md'
             ]);
           echo "<div id='requestbookContent'></div>";
+          Modal::end();
+          ?>
+          <?php
+          Modal::begin([
+            'header'=>'<h4>Approve Book</h4>',
+            'id'=>'approvebook',
+            'size'=>'modal-md'
+            ]);
+          echo "<div id='approvebookContent'></div>";
           Modal::end();
           ?>

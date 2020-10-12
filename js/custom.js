@@ -13,9 +13,20 @@ $(document).ready(function() {
 
   	});
 
+    $('.approvebook').click(function(e){
+			e.preventDefault();
+			var id = $(this).attr("val");
+      var studentid = $(this).attr("val2");
+	       $.get('http://localhost/LMS/book/approvebook?id='+id+'&studentid='+studentid,function(data){
+				$('#approvebook').modal('show')
+			 		.find('#approvebookContent')
+			 		.html(data);
+        });
+	});
+
     $('.requestbook').click(function(e){
           e.preventDefault();
-
+          // var link = $(this).attr("val");
           var id = $(this).attr("val");
           $.get('requestbook?id='+id,function(data){
           $('#requestbook').modal('show')

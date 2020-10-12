@@ -14,16 +14,16 @@ use kartik\date\DatePicker;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Books */
 /* @var $form ActiveForm */
-$studentId = Students::find()->where(['user_id'=>Yii::$app->user->id])->one();
-// var_dump($studentId);
+$student_id = Students::find()->where(['user_id'=>Yii::$app->user->id])->one();
 $books = ArrayHelper::map(Books::find()->where(['status'=>0])->all(), 'book_id', 'book_name');
+
 ?>
 <div class="requestbook">
 
     <?php $form = ActiveForm::begin(['id' => 'request-book']); ?>
 
         <?= $form->field($model, 'borrow_date')->hiddenInput(['value'=>date('yy/m/d')])->label(false) ?>
-        <?= $form->field($model, 'student_id')->hiddenInput(['value'=>$studentId->student_id])->label(false) ?>
+        <?= $form->field($model, 'student_id')->hiddenInput(['value'=>$student_id->student_id])->label(false) ?>
         <?= $form->field($model, 'book_id')->dropDownList($books) ?>
         <?= $form->field($model, 'expected_date')->widget(DatePicker::classname(), [
         'options' => ['placeholder' => 'Enter expected return date ...'],

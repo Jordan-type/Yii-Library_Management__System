@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use frontend\models\Books;
+use frontend\models\Students;
 use frontend\models\BookSearch;
 use frontend\models\BookAuthors;
 use frontend\models\BorrowedBooks;
@@ -115,12 +116,42 @@ public function bookauthors($author_id,$book_id){
     helps user to borrow books
     */
 
+    public function actionApprovebook($id, $studentid)
+    {
+        $model = new Books();
+
+        if (Yii::$app->request->post()) {
+          $command = \Yii::$app->db->createCommand('UPDATE books SET status=1 WHERE book_id='.$id);
+          $command->execute();
+          $this->createNotification($studentid,$id);
+          return $this->redirect(['index']);
+        }
+
+        return $this->renderAjax('approvebook', [
+            'model' => $model,
+        ]);
+    }
+
+public function createNotification($studentid, $book)
+{
+  $book = Books::find()->where(['book_id'=>$bbook_id])->one();
+  $icon = 'fa fa-book';
+  $user_id = Students::find()->where(['student_id'=>student_id])->one();
+  \Yii::$app->db->createCommand()->insert('notifications', [
+    'icon' => $icon,
+    'user_id' => $user_id,
+    'message' => 'Your request for book '.$book->book_name.' has been approved.'
+  ])->execute();
+  return true;
+}
+
+
 
 public function actionRequestbook()
     {
         $model = new BorrowedBooks();
 
-        var_dump(Yii::$app->request->post());
+        // var_dump(Yii::$app->request->post());
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
           $this->afterBookRequest($model->book_id);

@@ -8,6 +8,8 @@ use frontend\models\BorrowedBookSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use frontend\models\Books;
+use frontend\models\Students;
 
 /**
  * BorrowedBookController implements the CRUD actions for BorrowedBooks model.
@@ -96,6 +98,26 @@ class BorrowedBookController extends Controller
                 'model'=>$model,
             ]);
         }
+
+        public function actionApprove($id,$student_id){
+                $command = \Yii::$app->db->createCommand('UPDATE books SET status=1 WHERE book_id='.$id);
+                $command->execute();
+                $this->createNotification($student_id,$id);
+                return $this->redirect(['index']);
+            }
+
+
+            public function createNotification($student_id,$book_id){
+                $book = Books::find()->where(['book_id'=>$book_id])->one();
+                $icon= 'fa fa-book';
+                $user_id = Students::find()->where(['student_id'=>$student_id])->one();
+                \Yii::$app->db->createCommand()->insert('notifications', [
+                    'icon' => $icon,
+                    'user_id' => $user_id->user_id,
+                    'message'=> 'Your request for book '.$book->book_name.' has been approved.'
+                ])->execute();
+                return true;
+            }
 
     /**
      * Updates an existing BorrowedBooks model.
